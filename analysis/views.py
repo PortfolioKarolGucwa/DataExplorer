@@ -17,7 +17,7 @@ def dataset_analysis(request, pk):
         return redirect('dataset_list')
 
     summary = summarize_dataset(df)
-    chart = missing_values_chart(df)
+    chart = missing_values_chart(df) if df.isna().any().any() else None
 
     return render(request, 'analysis/detail.html', {
         'dataset': dataset,

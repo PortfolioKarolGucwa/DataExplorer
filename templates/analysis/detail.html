@@ -31,7 +31,11 @@
     </table>
 
     <h2 class="h5 mt-4">Missing values per column</h2>
-    <img src="data:image/png;base64,{{ chart }}" alt="Bar chart of missing values per column" class="img-fluid mb-4">
+    {% if chart %}
+        <img src="data:image/png;base64,{{ chart }}" alt="Bar chart of missing values per column" class="img-fluid mb-4">
+    {% else %}
+        <p class="text-muted">No missing values in this dataset.</p>
+    {% endif %}
 
     {% if summary.stats %}
         <h2 class="h5 mt-4">Summary statistics (numeric columns)</h2>
