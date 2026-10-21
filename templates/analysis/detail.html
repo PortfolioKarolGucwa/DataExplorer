@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ dataset.title }} — DataExplorer{% endblock %}
+
+{% block content %}
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1 class="h3 mb-0">{{ dataset.title }}</h1>
+        <a href="{% url 'dataset_list' %}" class="btn btn-outline-secondary btn-sm">Back to datasets</a>
+    </div>
+
+    <p class="text-muted">{{ summary.row_count }} rows &middot; {{ summary.column_count }} columns</p>
+
+    <h2 class="h5 mt-4">Columns</h2>
+    <table class="table table-sm">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Type</th>
+                <th>Missing values</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for column in summary.columns %}
+                <tr>
+                    <td>{{ column.name }}</td>
+                    <td><code>{{ column.dtype }}</code></td>
+                    <td>{{ column.missing }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h2 class="h5 mt-4">Missing values per column</h2>
+    <img src="data:image/png;base64,{{ chart }}" alt="Bar chart of missing values per column" class="img-fluid mb-4">
+
+    {% if summary.stats %}
+        <h2 class="h5 mt-4">Summary statistics (numeric columns)</h2>
+        <div class="table-responsive">
+            <table class="table table-sm">
+                <thead>
+                    <tr>
+                        <th>Column</th>
+                        {% for stat_name in summary.stat_names %}
+                            <th>{{ stat_name }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in summary.stats %}
+                        <tr>
+                            <td>{{ row.column }}</td>
+                            {% for key, value in row.items %}
+                                {% if key != 'column' %}<td>{{ value }}</td>{% endif %}
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
+
+    <h2 class="h5 mt-4">Preview (first {{ summary.preview|length }} rows)</h2>
+    <div class="table-responsive">
+        <table class="table table-sm table-striped">
+            <thead>
+                <tr>
+                    {% for column in summary.columns %}
+                        <th>{{ column.name }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in summary.preview %}
+                    <tr>
+                        {% for key, value in row.items %}
+                            <td>{{ value }}</td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

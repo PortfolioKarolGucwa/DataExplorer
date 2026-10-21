@@ -1,13 +1,33 @@
-from django.shortcuts import render, redirect
-from .forms import uploaded_file_form
+from django.contrib import messages
+from django.shortcuts import get_object_or_404, redirect, render
+from django.views.decorators.http import require_POST
 
-def upload_file(request):
+from .forms import UploadedFileForm
+from .models import UploadedFile
+
+
+def dataset_list(request):
+    datasets = UploadedFile.objects.all()
+    return render(request, 'datasets/list.html', {'datasets': datasets})
+
+
+def upload_dataset(request):
     if request.method == 'POST':
-        form = uploaded_file_form(request.POST, request.FILES) #handle file upload with request.FILES
+        form = UploadedFileForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
-            return redirect('success_url') #replace 'success_url' with the actual URL name you want to redirect to after successful upload
+            messages.success(request, 'Dataset uploaded.')
+            return redirect('dataset_list')
     else:
-        form = uploaded_file_form() #create an empty form instance for GET request
-    
-    return render(request, 'datasets/upload.html', {'form': form}) #render the form in the template 'datasets/upload.html' and pass the form instance to the context
+        form = UploadedFileForm()
+
+    return render(request, 'datasets/upload.html', {'form': form})
+
+
+@require_POST
+def delete_dataset(request, pk):
+    dataset = get_object_or_404(UploadedFile, pk=pk)
+    dataset.file.delete(save=False)
+    dataset.delete()
+    messages.success(request, 'Dataset deleted.')
+    return redirect('dataset_list')
