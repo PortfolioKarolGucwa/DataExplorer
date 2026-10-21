@@ -11,7 +11,7 @@ A small Django app for uploading CSV files and getting a quick look at what's in
   - `describe()`-style stats (count, mean, std, min/max, quartiles) for numeric columns
   - a preview of the first 10 rows
 - Delete a dataset (removes both the DB record and the uploaded file)
-- Basic validation on upload — only `.csv`, capped at 5 MB
+- Basic validation on upload — only `.csv` files are accepted
 
 ## Tech stack
 
